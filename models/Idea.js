@@ -6,7 +6,7 @@ const VidIdea = new Schema({
         type: String,
         required: true
     },
-    description: {
+    details: {
         type: String,
         required: true
     },

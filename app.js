@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const PORT = 3000;
 const bodyParser = require('body-parser')
 
-
+mongoose.Promise = global.Promise;
 //Connect to the database
 mongoose.connect('mongodb://localhost/vidjoid-dev')
     .then(() => {
@@ -13,8 +13,7 @@ mongoose.connect('mongodb://localhost/vidjoid-dev')
     .catch(err => console.log(err))
 
 //Import Model
-require('./models/Ideas');
-const Idea = mongoose.model('ideas');
+const Idea = require("./models/Idea");
 
 //BodyParser middleware
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -48,17 +47,23 @@ app.post('/ideas', (req, res) => {
     if (!req.body.title) {
         errors.push({ text: 'Please enter the title' })
     }
-    if (!req.body.desc) {
+    if (!req.body.details) {
         errors.push({ text: 'Please enter the description' })
     }
     if (errors.length > 0) {
         res.render('ideas/add', {
             errors,
             title: req.body.title,
-            desc: req.body.desc
+            details: req.body.details
         })
     } else {
-        res.send('OK')
+        const newDetails = {
+            title: req.body.title,
+            details: req.body.details
+        }
+        new Idea(newDetails)
+            .save()
+            .then(data =>res.redirect('/ideas'))
     }
 })
 
