@@ -67,6 +67,15 @@ app.post('/ideas', (req, res) => {
     }
 })
 
+app.get('/ideas', (req, res)=>{
+    Idea.find({})
+        .sort({date: 'desc'})
+        .then((data)=>{
+            res.render('ideas', {
+                data
+            })      
+        })
+})
 
 app.listen(PORT, () => {
     console.log(`Server started at port ${PORT}`)
