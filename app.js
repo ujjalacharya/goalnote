@@ -2,7 +2,8 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const PORT = 3000;
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override')
 
 mongoose.Promise = global.Promise;
 //Connect to the database
@@ -28,6 +29,8 @@ app.engine('handlebars',
 
 app.set('view engine', 'handlebars');
 
+//Middleware for method-override
+app.use(methodOverride('_method'))
 
 //Route handling
 app.get('/', (req, res) => {
@@ -63,17 +66,49 @@ app.post('/ideas', (req, res) => {
         }
         new Idea(newDetails)
             .save()
-            .then(data =>res.redirect('/ideas'))
+            .then(data => res.redirect('/ideas'))
     }
 })
 
-app.get('/ideas', (req, res)=>{
+app.get('/ideas', (req, res) => {
     Idea.find({})
-        .sort({date: 'desc'})
-        .then((data)=>{
+        .sort({ date: 'desc' })
+        .then((data) => {
             res.render('ideas', {
                 data
-            })      
+            })
+        })
+})
+
+app.get('/ideas/edit/:id', (req, res) => {
+    Idea.findOne({
+        _id: req.params.id
+    })
+        .then((data) => {
+            res.render('ideas/edit', { data })
+        })
+})
+
+app.put('/ideas/:id', (req, res) => {
+    Idea.findOne({
+        _id: req.params.id
+    })
+        .then(data => {
+            data.title = req.body.title,
+            data.details = req.body.details
+            data.save()
+        })
+        .then(data=>{
+            res.redirect('/ideas')
+        })
+})
+
+app.delete('/ideas/:id', (req, res)=>{
+    Idea.findOneAndRemove({
+        _id: req.params.id
+    })
+        .then(data=>{
+            res.redirect('/ideas')
         })
 })
 
