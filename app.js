@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const path = require('path');
 const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -19,6 +20,8 @@ mongoose.connect(db.mongoURI)
     })
     .catch(err => console.log(err))
 
+//Middleware for static folder
+app.use(express.static(path.join(__dirname, 'public')))
 
 //BodyParser middleware
 app.use(bodyParser.urlencoded({ extended: false }))
