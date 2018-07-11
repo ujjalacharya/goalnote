@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
-const Idea = require('../../models/Idea');
+const User = require('../../models/User');
+const bcrypt = require('bcryptjs');
+
 
 router.get('/login', (req, res) => {
     res.render('users/login')
@@ -24,7 +26,7 @@ router.post('/register', (req, res) => {
     if (req.body.password !== req.body.password2) {
         errors.push({ text: 'Passwords do not match' })
     }
-    
+
     if (errors.length > 0) {
         res.render('users/register', {
             errors: errors,
@@ -35,7 +37,39 @@ router.post('/register', (req, res) => {
         })
     }
     else {
-        res.send('Successfully registered!')
+        User.findOne({
+            email: req.body.email
+        })
+            .then(user => {
+                if (user) {
+                    req.flash('error_msg', 'User already exists');
+                    res.redirect('/users/register')
+                } else {
+                    const newUser = new User({
+                        name: req.body.name,
+                        email: req.body.email,
+                        password: req.body.password
+                    });
+
+                    bcrypt.genSalt(10, (err, salt) => {
+                        bcrypt.hash(newUser.password, salt, (err, hash) => {
+                            if (err) throw err;
+                            newUser.password = hash
+                            newUser.save()
+                                .then((user) => {
+                                    req.flash('success_msg', 'Successfully registered')
+                                    res.redirect('/users/login')
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                    return;
+                                })
+                        });
+                    });
+
+                }
+            })
+
     }
 
 })
