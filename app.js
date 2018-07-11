@@ -3,7 +3,9 @@ const app = express();
 const mongoose = require('mongoose');
 const PORT = 3000;
 const bodyParser = require('body-parser');
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
+const session = require('express-session')
+const flash = require('connect-flash');
 
 mongoose.Promise = global.Promise;
 //Connect to the database
@@ -31,6 +33,21 @@ app.set('view engine', 'handlebars');
 
 //Middleware for method-override
 app.use(methodOverride('_method'))
+
+//Middlware for session and flash
+app.use(session({
+    secret: 'ujjals secret',
+    resave: false,
+    saveUninitialized: true,
+}))
+app.use(flash());
+
+app.use(function (req, res, next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 //Route handling
 app.get('/', (req, res) => {
@@ -66,7 +83,10 @@ app.post('/ideas', (req, res) => {
         }
         new Idea(newDetails)
             .save()
-            .then(data => res.redirect('/ideas'))
+            .then(data =>{
+                req.flash('success_msg', 'Video idea has been added')            
+                res.redirect('/ideas')
+            })
     }
 })
 
@@ -95,19 +115,21 @@ app.put('/ideas/:id', (req, res) => {
     })
         .then(data => {
             data.title = req.body.title,
-            data.details = req.body.details
+                data.details = req.body.details
             data.save()
         })
-        .then(data=>{
+        .then(data => {
+            req.flash('success_msg', 'Video idea has been updated')
             res.redirect('/ideas')
         })
 })
 
-app.delete('/ideas/:id', (req, res)=>{
+app.delete('/ideas/:id', (req, res) => {
     Idea.findOneAndRemove({
         _id: req.params.id
     })
-        .then(data=>{
+        .then(data => {
+            req.flash('success_msg', 'Video idea has been deleted')
             res.redirect('/ideas')
         })
 })
