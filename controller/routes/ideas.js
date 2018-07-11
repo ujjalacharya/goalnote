@@ -1,13 +1,13 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 const Idea = require('../../models/Idea');
-const {ensureAuthentication} = require('../../helpers/auth');
+const { ensureAuthentication } = require('../../helpers/auth');
 
-router.get('/add',ensureAuthentication, (req, res) => {
+router.get('/add', ensureAuthentication, (req, res) => {
     res.render('ideas/add');
 })
 
-router.post('/',ensureAuthentication, (req, res) => {
+router.post('/', ensureAuthentication, (req, res) => {
     const errors = [];
     if (!req.body.title) {
         errors.push({ text: 'Please enter the title' })
@@ -24,19 +24,20 @@ router.post('/',ensureAuthentication, (req, res) => {
     } else {
         const newDetails = {
             title: req.body.title,
-            details: req.body.details
+            details: req.body.details,
+            user: req.user.id
         }
         new Idea(newDetails)
             .save()
-            .then(data =>{
-                req.flash('success_msg', 'Video idea has been added')            
+            .then(data => {
+                req.flash('success_msg', 'Video idea has been added')
                 res.redirect('/ideas')
             })
     }
 })
 
-router.get('/',ensureAuthentication, (req, res) => {
-    Idea.find({})
+router.get('/', ensureAuthentication, (req, res) => {
+    Idea.find({ user: req.user.id })
         .sort({ date: 'desc' })
         .then((data) => {
             res.render('ideas', {
@@ -45,16 +46,21 @@ router.get('/',ensureAuthentication, (req, res) => {
         })
 })
 
-router.get('/edit/:id',ensureAuthentication, (req, res) => {
+router.get('/edit/:id', ensureAuthentication, (req, res) => {
     Idea.findOne({
         _id: req.params.id
     })
         .then((data) => {
-            res.render('ideas/edit', { data })
+            if (data.user !== req.user.id) {
+                req.flash('error_msg', 'Not Authorized');
+                res.redirect('/ideas')
+            } else {
+                res.render('ideas/edit', { data })
+            }
         })
 })
 
-router.put('/:id',ensureAuthentication, (req, res) => {
+router.put('/:id', ensureAuthentication, (req, res) => {
     Idea.findOne({
         _id: req.params.id
     })
@@ -69,7 +75,7 @@ router.put('/:id',ensureAuthentication, (req, res) => {
         })
 })
 
-router.delete('/:id',ensureAuthentication, (req, res) => {
+router.delete('/:id', ensureAuthentication, (req, res) => {
     Idea.findOneAndRemove({
         _id: req.params.id
     })
