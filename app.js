@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const session = require('express-session')
@@ -9,10 +9,11 @@ const flash = require('connect-flash');
 const ideas = require('./controller/routes/ideas');
 const users = require('./controller/routes/users');
 const passport = require('passport');
+const db = require('./config/db')
 
 mongoose.Promise = global.Promise;
 //Connect to the database
-mongoose.connect('mongodb://localhost/vidjoid-dev')
+mongoose.connect(db.mongoURI)
     .then(() => {
         console.log('Successfully connected to the database')
     })

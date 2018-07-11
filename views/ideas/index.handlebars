@@ -2,11 +2,11 @@
         <div class="card card-body mb-2">
             <h3 class="text-center">{{title}}</h3>
             <p class="text-center">{{details}}</p>
-            <a class="btn btn-dark btn-block" href='/ideas/edit/{{id}}'>Edit Idea</a>
+            <a class="btn btn-dark btn-block" href='/ideas/edit/{{id}}'>Edit Goal</a>
             <form action="/ideas/{{id}}?_method=DELETE" method="POST">
             <button class="btn btn-danger btn-block mt-2">Delete</button>
             </form>
         </div>
     {{else}}
-        <p>No ideas listed</p>
+        <p>No goals listed</p>
 {{/each}}
