@@ -4,6 +4,6 @@ if (process.env.NODE_ENV === 'production') {
     }
 } else {
     module.exports = {
-        mongoURI: 'mongodb://localhost/vidjoid-dev'
+        mongoURI: 'mongodb://localhost/goalnote-dev'
     }
 }
