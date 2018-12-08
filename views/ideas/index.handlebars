@@ -1,12 +1,14 @@
 {{#each data}}
-        <div class="card card-body mb-2">
-            <h3>{{title}}</h3>
-            <p>{{details}}</p>
-            <a class="btn btn-dark btn-block" href='/ideas/edit/{{id}}'>Edit Goal</a>
-            <form action="/ideas/{{id}}?_method=DELETE" method="POST">
-            <button class="btn btn-danger btn-block mt-2">Delete</button>
-            </form>
-        </div>
-    {{else}}
-        <p>No goals listed</p>
+<div class="card card-body mb-2">
+    <h3>{{title}}</h3>
+    <p>{{details}}</p>
+    <div class="row">
+    <a class="btn btn-dark btn-block col-md-6" href='/ideas/edit/{{id}}'>Edit Goal</a>
+        <form class="col-md-6" action="/ideas/{{id}}?_method=DELETE" method="POST">
+            <button class="btn btn-danger btn-block">Delete</button>
+        </form>
+    </div>
+</div>
+{{else}}
+<p>No goals listed</p>
 {{/each}}

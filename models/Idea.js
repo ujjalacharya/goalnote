@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const VidIdea = new Schema({
+const Idea = new Schema({
     title: {
         type: String,
         required: true
@@ -17,7 +17,11 @@ const VidIdea = new Schema({
     date: {
         type: Date,
         default: Date.now
+    },
+    isCompleted: {
+        type: Boolean,
+        default: false
     }
 })
 
-module.exports = mongoose.model('ideas', VidIdea);
+module.exports = mongoose.model('ideas', Idea);

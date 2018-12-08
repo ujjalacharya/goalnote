@@ -12,6 +12,12 @@ const users = require('./controller/routes/users');
 const passport = require('passport');
 const db = require('./config/db')
 
+//Maintainence
+// app.use(function(req, res, next){
+//     res.send('<h2>App is in the maintainence mode right now. Please visit us later</h2>')
+// })
+
+
 mongoose.Promise = global.Promise;
 //Connect to the database
 mongoose.connect(db.mongoURI)

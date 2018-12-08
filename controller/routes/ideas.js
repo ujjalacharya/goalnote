@@ -37,7 +37,16 @@ router.post('/', ensureAuthentication, (req, res) => {
 })
 
 router.get('/', ensureAuthentication, (req, res) => {
-    Idea.find({ user: req.user.id })
+    Idea.find({ user: req.user.id, isCompleted: false })
+        .sort({ date: 'desc' })
+        .then((data) => {
+            res.render('ideas', {
+                data
+            })
+        })
+})
+router.get('/completed', ensureAuthentication, (req, res) => {
+    Idea.find({ user: req.user.id, isCompleted: true })
         .sort({ date: 'desc' })
         .then((data) => {
             res.render('ideas', {
@@ -55,18 +64,20 @@ router.get('/edit/:id', ensureAuthentication, (req, res) => {
                 req.flash('error_msg', 'Not Authorized');
                 res.redirect('/ideas')
             } else {
-                res.render('ideas/edit', { data })
+                res.render('ideas/edit', { data, isCompleted: data.isCompleted ? "checked": null })
             }
         })
 })
 
 router.put('/:id', ensureAuthentication, (req, res) => {
+    console.log(req.body)
     Idea.findOne({
-        _id: req.params.id
+        _id: req.params.id,
     })
         .then(data => {
             data.title = req.body.title,
-                data.details = req.body.details
+            data.details = req.body.details
+            data.isCompleted = req.body.isCompleted ? true : false
             data.save()
         })
         .then(data => {
