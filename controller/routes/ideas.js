@@ -48,6 +48,10 @@ router.get("/", ensureAuthentication, (req, res) => {
         .skip(perPage * page - perPage)
         .limit(perPage)
         .then(data => {
+          data.map((datum, i) =>{
+            data[i].check  = new Date(Date.parse(datum.date)).toLocaleDateString();            
+          })
+          console.log(data[1])
           res.render("ideas", {
             data,
             current: parseInt(page),
