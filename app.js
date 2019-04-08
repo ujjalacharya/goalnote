@@ -84,6 +84,9 @@ app.get("/about", (req, res) => {
 
 app.use("/ideas", ideas);
 app.use("/users", users);
+app.use("*", (req, res)=>{
+  res.sendFile(path.join(__dirname+ '/public/404.html'))
+})
 
 app.listen(PORT, () => {
   console.log(`Server started at port ${PORT}`);
