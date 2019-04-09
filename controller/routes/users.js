@@ -4,7 +4,14 @@ const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 
-router.get('/login', (req, res) => {
+const {ensureGuest} = require('../../helpers/auth');
+
+router.get('/login', ensureGuest, (req, res) => {
+    if( req.query.origin )
+        req.session.returnTo = req.query.origin
+    else
+        req.session.returnTo = req.header('Referer')
+
     res.render('users/login')
 })
 
@@ -12,7 +19,7 @@ router.get('/register', (req, res) => {
     res.render('users/register')
 })
 
-router.post('/register', (req, res) => {
+router.post('/register',ensureGuest, (req, res) => {
     const errors = [];
     if (!req.body.name) {
         errors.push({ text: 'Empty name' })
@@ -75,10 +82,15 @@ router.post('/register', (req, res) => {
 })
 
 router.post('/login',(req, res, next)=>{
+    let returnTo = '/'
+    if (req.session.returnTo) {
+      returnTo = req.session.returnTo
+      delete req.session.returnTo
+    }
     passport.authenticate('local',
         {
             failureRedirect: '/users/login',
-            successRedirect: '/ideas',
+            successRedirect: returnTo,
             failureFlash: true
         })(req, res, next)
     })
@@ -86,6 +98,9 @@ router.post('/login',(req, res, next)=>{
 router.get('/logout', (req, res)=>{
     req.logout();
     req.flash('success_msg', 'Successfully logged out');
-    res.redirect('/')
+    res.redirect(req.header('Referer') || '/');
+    if (req.session.returnTo) {
+        delete req.session.returnTo
+    }
 })
 module.exports = router;
