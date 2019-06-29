@@ -119,7 +119,7 @@ router.put("/:id", ensureAuthentication, (req, res) => {
       data.save();
     })
     .then(data => {
-      req.flash("success_msg", "Video idea has been updated");
+      req.flash("success_msg", "Goal idea has been updated");
       res.redirect("/ideas");
     });
 });
@@ -128,7 +128,7 @@ router.delete("/:id", ensureAuthentication, (req, res) => {
   Idea.findOneAndRemove({
     _id: req.params.id
   }).then(data => {
-    req.flash("success_msg", "Video idea has been deleted");
+    req.flash("success_msg", "Goal idea has been deleted");
     res.redirect("/ideas");
   });
 });
